@@ -5,12 +5,8 @@ const app = new SnowfallServer({
     Port: 8090,
     UrlNotFoundMessage: "Yo dawg, that url does not exist!"
 });
-app.AddRoute("GET", "/", () => {
-    return "Yo.";
-});
-app.AddRoute("GET", "/cool", () => {
-    return "Cool";
-})
+// Body MUST be assigned the type any!
+// body is a string that can be parsed
 app.AddRoute("POST", "/poster", (body: any) => {
     return `Hey, ${body.name}!`;
 })

@@ -1,5 +1,6 @@
 // Snowfall.ts - Copyright Interfiber 2021 Under the MIT License
 import { serve } from "https://deno.land/std@0.88.0/http/server.ts";
+import { walkSync } from "https://deno.land/std@0.88.0/fs/mod.ts";
 const URLMethods = ["GET", "POST"];
 let URLMethodSupported: any = null;
 let OnRequestMethods = [{
@@ -82,7 +83,13 @@ export class SnowfallServer {
                     req.respond({ body: `Route not found ${route}` });
                 }
             }else if (FoundRequestFunction == true && method == RequestFunction.method) {
-                req.respond({ body: RequestFunction.callback(JSON.parse(body)) });
+                // Check Body Type
+                if (method == "POST" && headers.get("content-type") != "application/json"){
+                    console.log("LOG:: Request content-type is not supported!");
+                    req.respond({ body: JSON.stringify({ message: "Only application/json is allowed", error: true }) })
+                }else {
+                    req.respond({ body: RequestFunction.callback(JSON.parse(body)) });
+                }
             }else {
                 console.log(`LOG:: Route '${route}' does not match the requirments.`);
                 console.log(`LOG:: Method Expected: '${RequestFunction.method}'`);

@@ -1,9 +1,9 @@
 {
   "$schema": "https://deno.land/x/denon@2.4.7/schema.json",
   "scripts": {
-    "start": {
-      "cmd": "deno run --allow-net examples/hello_world.ts",
-      "desc": "Run hello_world.ts file during development"
+    "post": {
+      "cmd": "deno run --allow-net examples/post.ts",
+      "desc": "Run post.ts file during development"
     }
   }
 }
