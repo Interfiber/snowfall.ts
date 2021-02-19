@@ -9,7 +9,7 @@ app.AddRoute("GET", "/", () => {
     return "Yo.";
 });
 app.AddRoute("GET", "/cool", () => {
-    return "Cool Berries";
+    return "Cool";
 })
 app.AddRoute("POST", "/poster", (body: any) => {
     return `Hey, ${body.name}!`;
