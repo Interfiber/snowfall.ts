@@ -59,6 +59,9 @@ export class SnowfallServer {
             let route = req.url;
             let method = req.method;
             let FoundRequestFunction = false;
+            let headers = req.headers;
+            let encodedBody: Uint8Array = await Deno.readAll(req.body);
+            let body = new TextDecoder("utf-8").decode(encodedBody);
             let RequestFunction: any = function (){
                 return "URL not found";
             };
@@ -79,7 +82,7 @@ export class SnowfallServer {
                     req.respond({ body: `Route not found ${route}` });
                 }
             }else if (FoundRequestFunction == true && method == RequestFunction.method) {
-                req.respond({ body: RequestFunction.callback() });
+                req.respond({ body: RequestFunction.callback(JSON.parse(body)) });
             }else {
                 console.log(`LOG:: Route '${route}' does not match the requirments.`);
                 console.log(`LOG:: Method Expected: '${RequestFunction.method}'`);

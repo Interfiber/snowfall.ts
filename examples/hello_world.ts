@@ -11,7 +11,7 @@ app.AddRoute("GET", "/", () => {
 app.AddRoute("GET", "/cool", () => {
     return "Cool Berries";
 })
-app.AddRoute("POST", "/poster", () => {
-    return "Post It!";
+app.AddRoute("POST", "/poster", (body: any) => {
+    return `Hey, ${body.name}!`;
 })
 app.StartHTTPServer();
