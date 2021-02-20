@@ -9,21 +9,18 @@ let OnRequestMethods = [{
         return "This URL is reserved by snowfall";
     }
 }];
-export class Response {
-    url: String
-    constructor(url: String){
-        this.url = url
-    }
-    Send(responseText: String){
-        console.log("LOG:: Sending Response Data to client");
-    }
-}
 export class SnowfallServer {
     config: any
     constructor(config: any){
         console.log("LOG:: Created Snowfall Server");
         this.config = config;
     }
+    /**
+     * 
+     * @param method {string} the method for the route(GET, or POST are supported)
+     * @param route {string} the route to listen on(example: /)
+     * @param callback {any} function to run when route is hit(any data returned as a string will be the response)
+     */
     AddRoute(method: string, route: string, callback: any){
         console.log(`LOG:: Adding Route with method ${method}`);
         // Check route type to make sure it is supported
@@ -42,6 +39,9 @@ export class SnowfallServer {
         });
         console.log("LOG:: Added Request to index");
     }
+    /**
+     * Starts a http server and waits for incoming connections
+     */
     async StartHTTPServer(){
         console.log("LOG:: Checking for Port...");
         if (this.config.Port == undefined){
