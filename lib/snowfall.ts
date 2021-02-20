@@ -1,6 +1,5 @@
 // Snowfall.ts - Copyright Interfiber 2021 Under the MIT License
 import { serve } from "https://deno.land/std@0.88.0/http/server.ts";
-import { walkSync } from "https://deno.land/std@0.88.0/fs/mod.ts";
 const URLMethods = ["GET", "POST"];
 let URLMethodSupported: any = null;
 let OnRequestMethods = [{
@@ -39,7 +38,7 @@ export class SnowfallServer {
         OnRequestMethods.push({
             route: route,
             method: method,
-            callback: callback
+            callback: callback,
         });
         console.log("LOG:: Added Request to index");
     }
@@ -57,7 +56,7 @@ export class SnowfallServer {
         console.log(`LOG:: Server Running at: http://localhost:${this.config.Port}`);
         console.log("LOG:: Waiting for requests...");
         for await (const req of server) {
-            let route = req.url;
+            let route = req.url.split("?");
             let method = req.method;
             let FoundRequestFunction = false;
             let headers = req.headers;
@@ -66,35 +65,48 @@ export class SnowfallServer {
             let RequestFunction: any = function (){
                 return "URL not found";
             };
-            console.log(`LOG:: Got Request on route ${route}`);
+            console.log(`LOG:: Got Request on route ${route[0]}`);
             console.log("LOG:: Searching Index for request...");
             OnRequestMethods.forEach(func => {
-                if (func.route == route){
+                if (func.route == route[0]){
                     console.log("LOG:: Found Route for this URL");
                     FoundRequestFunction = true;
                     RequestFunction = func;
                 }
             });
             if (FoundRequestFunction == false){
-                console.log(`LOG:: Route '${route}' does not have a function. Sending 404`);
+                console.log(`LOG:: Route '${route[0]}' does not have a function. Sending 404`);
                 if (this.config.UrlNotFoundMessage != undefined){
                     req.respond({ body: this.config.UrlNotFoundMessage });
                 }else {
-                    req.respond({ body: `Route not found ${route}` });
+                    req.respond({ body: `Route not found ${route[0]}` });
                 }
-            }else if (FoundRequestFunction == true && method == RequestFunction.method) {
+            }else if (FoundRequestFunction && method == RequestFunction.method) {
                 // Check Body Type
                 if (method == "POST" && headers.get("content-type") != "application/json"){
                     console.log("LOG:: Request content-type is not supported!");
                     req.respond({ body: JSON.stringify({ message: "Only application/json is allowed", error: true }) })
                 }else {
-                    req.respond({ body: RequestFunction.callback(JSON.parse(body)) });
+                    if (method == "POST"){
+                        req.respond({ body: RequestFunction.callback(JSON.parse(body)) });
+                    }else {
+                        if (req.url.includes("?")){
+                            // Handle url params
+                            console.log(route[0]);
+                            let url_search_params = req.url.replace(/\?/g, "").replace(route[0].toString(), "");
+                            console.log(url_search_params);
+                            let url_params = new URLSearchParams(url_search_params);
+                            req.respond({ body: RequestFunction.callback(url_params) });
+                        }else {
+                            req.respond({ body: RequestFunction.callback() });
+                        }
+                    }
                 }
             }else {
-                console.log(`LOG:: Route '${route}' does not match the requirments.`);
+                console.log(`LOG:: Route '${route[0]}' does not match the requirments.`);
                 console.log(`LOG:: Method Expected: '${RequestFunction.method}'`);
                 console.log(`LOG:: Method Got: '${method}'`);
-                req.respond({ body: `Route '${route}' does not match the requirments.\nMethod Expected: '${RequestFunction.method}'\nMethod Got: '${method}'\nFound Route Method: ${FoundRequestFunction}` });
+                req.respond({ body: `Route '${route[0]}' does not match the requirments.\nMethod Expected: '${RequestFunction.method}'\nMethod Got: '${method}'\nFound Route Method: ${FoundRequestFunction}` });
             }
         }
     }

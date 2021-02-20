@@ -8,3 +8,4 @@ const app = new SnowfallServer({
 app.AddRoute("GET", "/", () => {
     return "Yo.";
 });
+app.StartHTTPServer();

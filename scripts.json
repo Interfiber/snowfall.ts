@@ -4,6 +4,14 @@
     "post": {
       "cmd": "deno run --allow-net examples/post.ts",
       "desc": "Run post.ts file during development"
+    },
+    "get": {
+      "cmd": "deno run --allow-net examples/get.ts",
+      "desc": "Run get.ts file during development"
+    },
+    "params": {
+      "cmd": "deno run --allow-net examples/params.ts",
+      "desc": "Run params.ts file during development"
     }
   }
 }
