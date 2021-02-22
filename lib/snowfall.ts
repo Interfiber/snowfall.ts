@@ -92,9 +92,7 @@ export class SnowfallServer {
                     }else {
                         if (req.url.includes("?")){
                             // Handle url params
-                            console.log(route[0]);
                             let url_search_params = req.url.replace(/\?/g, "").replace(route[0].toString(), "");
-                            console.log(url_search_params);
                             let url_params = new URLSearchParams(url_search_params);
                             req.respond({ body: RequestFunction.callback(url_params) });
                         }else {
